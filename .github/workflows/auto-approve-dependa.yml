@@ -1,0 +1,26 @@
+name: Dependabot auto-merge 🤖
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'oesand/shorten'
+    env:
+      PR_URL: ${{github.event.pull_request.html_url}}
+      GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    steps:
+      - name: 📌 Metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v3
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: ✅ Approve
+        run: gh pr review --approve "$PR_URL"
+
+      - name: ✨ Merge
+        run: gh pr merge --auto --squash --delete-branch "$PR_URL"
